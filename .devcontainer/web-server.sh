@@ -1,5 +1,7 @@
 #!/bin/bash
-LINK_FILE="/workspaces/nikvpn-codespace/nikvpn-link.txt"
+CURRENT_DIR=$(pwd)
+LINK_FILE="${CURRENT_DIR}/nikvpn-link.txt"
+INDEX_FILE="${CURRENT_DIR}/index.html"
 
 # صبر می‌کنیم تا فایل لینک ساخته بشه (حداکثر 30 ثانیه)
 for i in {1..30}; do
@@ -14,12 +16,12 @@ if [ -z "$LINK" ]; then
     LINK="Link not ready yet. Please wait or check if setup completed."
 fi
 
-# ایجاد صفحه HTML
-cat > /workspaces/nikvpn-codespace/index.html <<EOF
+# ایجاد صفحه HTML در همان دایرکتوری
+cat > "$INDEX_FILE" <<EOF
 <!DOCTYPE html>
 <html>
 <head>
-    <title>NikVPN - Get Your Link</title>
+    <title>NikVPN Mobile - Get Your Link</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
@@ -104,16 +106,11 @@ cat > /workspaces/nikvpn-codespace/index.html <<EOF
             color: #4ade80;
             margin-top: 12px;
         }
-        @media (max-width: 480px) {
-            .card { padding: 24px 16px; }
-            button { padding: 12px 20px; font-size: 14px; }
-            .link-box { font-size: 9px; }
-        }
     </style>
 </head>
 <body>
     <div class="card">
-        <h1>🔗 NikVPN</h1>
+        <h1>📱 NikVPN Mobile</h1>
         <div class="sub">VLESS + xHTTP + TLS</div>
         <div class="link-box" id="link">$LINK</div>
         <div class="btn-group">
@@ -157,9 +154,8 @@ cat > /workspaces/nikvpn-codespace/index.html <<EOF
 </html>
 EOF
 
-# اجرای وب سرور روی پورت 8080 در پس‌زمینه
-cd /workspaces/nikvpn-codespace
+# اجرای وب سرور در دایرکتوری فعلی
+cd "$CURRENT_DIR"
 nohup python3 -m http.server 8080 > /tmp/webserver.log 2>&1 &
-
 echo "🌐 Web server started on port 8080"
 echo "📱 Open the forwarded URL for port 8080 in your browser"
